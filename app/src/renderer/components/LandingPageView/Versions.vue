@@ -5,14 +5,14 @@
 </template>
 
 <script>
-  import os from 'os'
+  import os from 'os';
 
   export default {
-    data () {
+    data() {
       return {
         platform: os.platform(),
-        versions: process.versions
-      }
-    }
-  }
+        versions: process.versions,
+      };
+    },
+  };
 </script>
