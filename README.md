@@ -1,6 +1,6 @@
-# v-nk
+# vmap
 
-> A Vue.js project
+> A Vue.js project, show a map using [maplib](https://github.com/kartverket/MapLib)
 
 ## Build Setup
 
