@@ -1,27 +1,27 @@
-# vmap
+# v-nk
 
-> An electron-vue project
+> A Vue.js project
 
 ## Build Setup
 
 ``` bash
 # install dependencies
-npm install
+yarn
 
-# serve with hot reload at localhost:9080
-npm run dev
+# serve with hot reload at localhost:8080
+yarn run dev
 
-# build electron app for production
-npm run build
+# build for production with minification
+yarn run build
 
-# lint all JS/Vue component files in `app/src`
-npm run lint
+# run unit tests
+yarn run unit
 
-# run webpack in production
-npm run pack
+# run e2e tests
+yarn run e2e
+
+# run all tests
+yarn test
 ```
-More information can be found [here](https://simulatedgreg.gitbooks.io/electron-vue/content/docs/npm_scripts.html).
 
----
-
-This project was generated from [electron-vue](https://github.com/SimulatedGREG/electron-vue) using [vue-cli](https://github.com/vuejs/vue-cli). Documentation about this project can be found [here](https://simulatedgreg.gitbooks.io/electron-vue/content/index.html).
+For detailed explanation on how things work, checkout the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).

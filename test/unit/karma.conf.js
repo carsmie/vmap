@@ -1,43 +1,60 @@
-'use strict'
+// This is a karma config file. For more details see
+//   http://karma-runner.github.io/0.13/config/configuration-file.html
+// we are also using it with karma-webpack
+//   https://github.com/webpack/karma-webpack
 
-const path = require('path')
-const merge = require('webpack-merge')
-const webpack = require('webpack')
+var path = require('path')
+var merge = require('webpack-merge')
+var baseConfig = require('../../build/webpack.base.conf')
+var utils = require('../../build/utils')
+var webpack = require('webpack')
+var projectRoot = path.resolve(__dirname, '../../')
 
-const baseConfig = require('../../webpack.renderer.config')
-const projectRoot = path.resolve(__dirname, '../../app')
-
-let webpackConfig = merge(baseConfig, {
+var webpackConfig = merge(baseConfig, {
+  // use inline sourcemap for karma-sourcemap-loader
+  module: {
+    loaders: utils.styleLoaders()
+  },
   devtool: '#inline-source-map',
+  vue: {
+    loaders: {
+      js: 'babel-loader'
+    }
+  },
   plugins: [
     new webpack.DefinePlugin({
-      'process.env.NODE_ENV': '"testing"'
+      'process.env': require('../../config/test.env')
     })
   ]
 })
 
-// don't treat dependencies as externals
+// no need for app entry during tests
 delete webpackConfig.entry
-delete webpackConfig.externals
-delete webpackConfig.output.libraryTarget
 
-// only apply babel for test files when using isparta
-webpackConfig.module.rules.some(loader => {
-  if (loader.loader === 'babel-loader') {
-    loader.include.push(path.resolve(projectRoot, '../test/unit'))
+// Use babel for test files too
+webpackConfig.module.loaders.some(function (loader, i) {
+  if (/^babel(-loader)?$/.test(loader.loader)) {
+    loader.include.push(path.resolve(projectRoot, 'test/unit'))
     return true
   }
 })
 
-// apply vue option to apply isparta-loader on js
-webpackConfig.module.rules
-  .find(({ loader }) => loader === 'vue-loader').options.loaders.js = 'babel-loader'
-
-module.exports = config => {
+module.exports = function (config) {
   config.set({
-    browsers: ['visibleElectron'],
-    client: {
-      useIframe: false
+    // to run in additional browsers:
+    // 1. install corresponding karma launcher
+    //    http://karma-runner.github.io/0.13/config/browsers.html
+    // 2. add it to the `browsers` array below.
+    browsers: ['PhantomJS'],
+    frameworks: ['mocha', 'sinon-chai'],
+    reporters: ['spec', 'coverage'],
+    files: ['./index.js'],
+    preprocessors: {
+      './index.js': ['webpack', 'sourcemap']
+    },
+    webpack: webpackConfig,
+    webpackMiddleware: {
+      noInfo: true
     },
     coverageReporter: {
       dir: './coverage',
@@ -45,23 +62,6 @@ module.exports = config => {
         { type: 'lcov', subdir: '.' },
         { type: 'text-summary' }
       ]
-    },
-    customLaunchers: {
-      'visibleElectron': {
-        base: 'Electron',
-        flags: ['--show']
-      }
-    },
-    frameworks: ['mocha', 'chai'],
-    files: ['./index.js'],
-    preprocessors: {
-      './index.js': ['webpack', 'sourcemap']
-    },
-    reporters: ['spec', 'coverage'],
-    singleRun: true,
-    webpack: webpackConfig,
-    webpackMiddleware: {
-      noInfo: true
     }
   })
 }
