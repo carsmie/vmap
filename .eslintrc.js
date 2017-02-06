@@ -8,7 +8,7 @@ module.exports = {
     browser: true,
     node: true
   },
-  extends: 'airbnb-base',
+  extends: 'standard',
   plugins: [
     'html'
   ],

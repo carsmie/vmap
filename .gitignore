@@ -4,6 +4,10 @@ app/dist/main.js
 app/dist/renderer.js
 app/dist/styles.css
 builds/*
+dist/
+test/unit/coverage
+test/e2e/reports
+selenium-debug.log
 coverage
 node_modules/
 npm-debug.log
