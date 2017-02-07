@@ -73,7 +73,7 @@
       )
       map.Init('vmap', this.config)
 
-      this.$http.get('http://norgeskart.no/config/norgeskart.json').then(response => {
+      this.$http.get('http://norgeskart.no/config/geonorge.json').then(response => {
         this.config = response.body
         console.log(this.config)
         map.Init('vmap', this.config)
