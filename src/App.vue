@@ -2,17 +2,19 @@
   <div id="app">
     <search></search>
     <vmap></vmap>
+    <baseLayerSwitcher></baseLayerSwitcher>
   </div>
 </template>
 
 <script>
   import Search from './components/Search'
   import vmap from './components/Map'
+  import baseLayerSwitcher from './components/BaseLayerSwitcher'
 
   export default {
     name: 'app',
     components: {
-      Search, vmap
+      Search, vmap, baseLayerSwitcher
     }
   }
 </script>
