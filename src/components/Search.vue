@@ -26,7 +26,7 @@
                           </i>
       </div>
     </div>
-  
+
     <div ng-switch="searchPanelLayout">
       <div v-if="searchPanelLayout = searchResultsPanel"
            search-results-panel></div>
@@ -44,7 +44,7 @@
       <div v-else-if="searchPanelLayout = searchLagNodplakatPanel"
            search-lag-nodplakat-panel></div>
     </div>
-  
+
   </div>
 </template>
 <script>
@@ -74,7 +74,7 @@ export default {
     populateServiceDict: (query) => {
       // this.serviceDict = searchPanelFactory.getServiceDict(query)
     },
-    emoveInfomarkers: () => {
+    removeInfomarkers: () => {
       map.RemoveInfoMarkers()
       map.RemoveInfoMarker()
     },
@@ -86,6 +86,9 @@ export default {
       this.coordinate = false
       map.RemoveInfoMarker()
       // this.placenamePage = searchPanelFactory.resetPlacenamePage() + 1
+    },
+    openNav: () => {
+      console.log('Open main menu, not implented yet')
     },
     cleanResults: () => {
       this.init()

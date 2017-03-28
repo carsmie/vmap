@@ -21,7 +21,7 @@
       <ul>
         <li tabindex="0"
             class="sidenav-sections"
-            v-for="baseLayer in baseLayers()" v-if="baseLayer.name" > 
+            v-for="baseLayer in baseLayers()" v-if="baseLayer.name" >
           <div class="row" @click="setAsBaseLayer(baseLayer)">
             <div class="col-xs-1">
               <span :style="getBaseLayerStyle(baseLayer)"></span>
@@ -41,10 +41,9 @@ import { map } from '../services/mapHelper'
 export default {
   name: 'baseLayerSwitcher',
   data () {
-    const data = {
+    return {
       baseLayers: map.GetBaseLayers
     }
-    return data
   },
   methods: {
     getBaseLayerStyle: (baseLayer) => {
