@@ -12,18 +12,18 @@
                :placeholder="search_text" />
         <i class="left-side glyphicon glyphicon-menu-hamburger has-tooltip"
            @click="openNav()">
-                              <span class="tooltip tooltip-absolute tooltip-info" translate="menu"></span>
-                          </i>
+                                        <span class="tooltip tooltip-absolute tooltip-info" translate="menu"></span>
+                                    </i>
         <i v-show="searchResults != undefined"
            @click="cleanResults(); resetSearchPanel()">
-                              <div class="cleanResults">
-                                  <span class="glyphicon glyphicon-menu-right"></span>
-                                  <span class="glyphicon glyphicon-menu-left"></span>
-                              </div>
-                          </i>
+                                        <div class="cleanResults">
+                                            <span class="glyphicon glyphicon-menu-right"></span>
+                                            <span class="glyphicon glyphicon-menu-left"></span>
+                                        </div>
+                                    </i>
         <i class="absolute-right-side glyphicon glyphicon-search has-tooltip">
-                              <span class="tooltip tooltip-absolute tooltip-info" translate="search"></span>
-                          </i>
+                                        <span class="tooltip tooltip-absolute tooltip-info" translate="search"></span>
+                                    </i>
       </div>
     </div>
 
@@ -49,63 +49,97 @@
 </template>
 <script>
 import { map } from '../services/mapHelper'
+import * as searchServices from '../services/searchService'
 
 export default {
   name: 'search',
   props: ['map'],
+  mounted () {
+  },
   data () {
     return {
       searchBarModel: '',
       searchPanelLayout: '',
-      searchResults: undefined,
       activeSearchResult: undefined,
       coordinate: undefined,
-      placenamePage: undefined,
+      search_text: 'search',
+      placenameHitsPerPage: 15,
+      placenamePage: 0,
+      mapEpsg: 'EPSG:25833',
+      initialSearchServices: ['ssr', 'matrikkelveg', 'matrikkeladresse', 'matrikkelnummer'],
+      availableUTMZones: ['25832', '25833', '25834', '25835', '25836', '32632', '32633', '32634', '32635', '32636'],
+      sourceDict: {
+        ssr: 'Stedsnavn',
+        adresse: 'Adresse',
+        matrikkelveg: 'Vegnavn',
+        matrikkeladresse: 'Adresse',
+        coordGeo: 'Geografisk koordinat',
+        coordUtm: 'UTM-koordinat',
+        mouseClick: 'Klikk i kartet',
+        matrikkelnummer: 'Gårds og bruksnummer'
+      },
+      searchOptionsOrder: ['seEiendom', 'ssrFakta', 'koordTrans', 'lagTurkart', 'lagFargeleggingskart', 'lagNodplakat'],
+      eiendomMarkering: false,
+      searchResults: {},
       unifiedResults: {},
-      serviceDict: undefined,
-      search_text: 'search'
+      serviceDict: {},
+      queryDict: {},
+      searchTimestamp: undefined
     }
   },
   methods: {
-    resetResults: () => {
+    resetResults () {
       this.unifiedResults = {}
       this.searchResults = {}
     },
-    populateServiceDict: (query) => {
-      // this.serviceDict = searchPanelFactory.getServiceDict(query)
+    populateServiceDict (query) {
+      this.serviceDict = searchServices.generateServiceDict(query)
     },
-    removeInfomarkers: () => {
+    removeInfomarkers () {
       map.RemoveInfoMarkers()
       map.RemoveInfoMarker()
     },
-    init: (query) => {
+    init (query) {
       this.resetResults()
       this.searchResults = undefined
       this.activeSearchResult = undefined
       this.populateServiceDict(query)
       this.coordinate = false
-      map.RemoveInfoMarker()
-      // this.placenamePage = searchPanelFactory.resetPlacenamePage() + 1
+      // map.RemoveInfoMarker()
+      this.placenamePage = this.resetPlacenamePage() + 1
     },
-    openNav: () => {
+    resetPlacenamePage () {
+      this.placenamePage = 0
+      return this.placenamePage
+    },
+    decreasePlacenamePage () {
+      if (this.placenamePage > 0) {
+        this.placenamePage--
+      }
+      return this.placenamePage
+    },
+    increasePlacenamePage () {
+      return this.placenamePage++
+    },
+    openNav () {
       console.log('Open main menu, not implented yet')
     },
-    cleanResults: () => {
+    cleanResults () {
       this.init()
       this.removeInfomarkers()
       this.searchBarModel = ''
       this.deactivatePrintBoxSelect()
     },
-    resetSearchPanel: () => {
+    resetSearchPanel () {
       this.showSearchOptionsPanel()
       this.searchPanelLayout = ''
-      // searchPanelFactory.setShowEiendomMarkering(false)
+      this.eiendomMarkering = false
     },
-    deactivatePrintBoxSelect: () => {
+    deactivatePrintBoxSelect () {
       // const printBoxSelectTool = toolsFactory.getToolById("PrintBoxSelect")
       // toolsFactory.deactivateTool(printBoxSelectTool)
     },
-    showSearchOptionsPanel: (previous) => {
+    showSearchOptionsPanel (previous) {
       this.deactivatePrintBoxSelect()
       this.deactivateAddLayerUrl()
       this.searchPanelLayout = 'searchOptionsPanel'
@@ -113,27 +147,73 @@ export default {
         // mainAppFactory.setActiveSearchPanel('searchOptionsPanel')
       }
     },
-    deactivateAddLayerUrl: () => {
+    deactivateAddLayerUrl () {
       // const addLayerUrlTool = toolsFactory.getToolById("AddLayerUrl")
       // addLayerUrlTool.additionalOptions.show = false
       // toolsFactory.activateTool(addLayerUrlTool)
       // toolsFactory.deactivateTool(addLayerUrlTool)
     },
-    searchBarValueChanged: () => {
+    searchBarValueChanged () {
       if (this.searchBarModel === '') {
         this.cleanResults()
         return
       }
-      const query = this.getQuery()
+      const query = this.searchBarModel + ''
       this.setSearchInUrl(query)
 
+      /*
       if (this.checkQueryForCoordinates(query)) {
         this.initSearchOptions()
         return
       }
+      */
       this.init(query)
       this.showSearchResultPanel()
-      // this.getResults(searchPanelFactory.getInitialSearchServices())
+      this.getResults(this.initialSearchServices)
+    },
+    setSearchInUrl (query) {
+      this.removeSearchFromUrl()
+      // var oldUrl = $location.url()
+      // $location.url(oldUrl + '&sok=' + query)
+    },
+    removeSearchFromUrl () {
+      // var hash = _getValueFromUrl('sok')
+      // var oldUrl = $location.url()
+      // $location.url(oldUrl.replace('sok=' + hash, ''))
+    },
+    showSearchResultPanel () {
+      deactivatePrintBoxSelect()
+      this.searchPanelLayout = 'searchResultsPanel'
+      // mainAppFactory.setActiveSearchPanel('searchResultsPanel');
+    },
+    downloadSearchBarFromUrl (serviceDict, timestamp) {
+/*
+      this.queryDict[serviceDict.source] = $.ajax({
+        type: 'GET',
+        url: serviceDict.url,
+        async: true,
+        success: function (document) {
+          if (((document.length && document.length > 0) || (document.childNodes && document.childNodes[0].childNodes.length)) && this.searchTimestamp === timestamp) {
+            this.successFullSearch(serviceDict, document)
+          }
+        },
+        error: function (searchError) {
+          console.error('Error downloading from ' + serviceDict.url, searchError)
+        }
+      })
+*/
+    },
+    getResults (searchServices) {
+      this.cancelOldRequests()
+      this.searchTimestamp = parseInt((new Date()).getTime(), 10)
+      for (var serviceIndex = 0; serviceIndex < searchServices.length; serviceIndex++) {
+        this.downloadSearchBarFromUrl(this.serviceDict[searchServices[serviceIndex]], this.searchTimestamp)
+      }
+    },
+    cancelOldRequests () {
+      for (let service in this.queryDict) {
+        this.queryDict[service].abort()
+      }
     }
   }
 }
@@ -142,5 +222,4 @@ export default {
 <style lang='scss'>
 @import "./../assets/styles/_main.scss";
 @import "./../assets/styles/_sidenav.scss";
-
 </style>
