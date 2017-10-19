@@ -1,26 +1,22 @@
 <template>
   <div id="app">
-    <search></search>
     <vmap></vmap>
-    <baseLayerSwitcher></baseLayerSwitcher>
   </div>
 </template>
 
 <script>
-  import Search from './components/Search'
-  import vmap from './components/Map'
-  import baseLayerSwitcher from './components/BaseLayerSwitcher'
+import vmap from './components/Map'
 
-  export default {
-    name: 'app',
-    components: {
-      Search, vmap, baseLayerSwitcher
-    }
+export default {
+  name: 'app',
+  components: {
+    vmap
   }
+}
 </script>
 
 <style lang="scss">
- @import "./assets/styles/_main.scss";
+@import "./assets/styles/_main.scss";
 
 #app {
   text-align: center;

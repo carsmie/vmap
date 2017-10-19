@@ -1,4 +1,13 @@
+import $ from 'jquery'
+import proj4 from 'proj4'
+import ol from 'openlayers'
+import 'openlayers/dist/ol.css'
 import * as ISY from 'maplib'
+
+// export for others scripts to use
+window.$ = $
+window.proj4 = proj4
+window.ol = ol
 
 let groupIds = []
 let notDummyGroup = false

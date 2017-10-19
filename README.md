@@ -1,6 +1,5 @@
 # vmap
-
-> A Vue.js project, show a map using [maplib](https://github.com/kartverket/MapLib)
+> A Simple Vue map using [maplib](https://github.com/kartverket/MapLib) and the configuration from [Norgeskart3](https://github.com/kartverket/norgeskart3) which is source code for [Norgeskart](https://www.norgeskart.no/)
 
 ## Build Setup
 

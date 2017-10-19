@@ -12,6 +12,7 @@ export default {
   },
   mounted () {
     map.Init('vmap', mapConfig)
+    map.AddZoom()
     console.log('Map initialised')
   }
 }
