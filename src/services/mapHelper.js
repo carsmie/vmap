@@ -225,7 +225,7 @@ const getWmsUrl = (url) => {
     return url
   }
 }
-const addLayer = (sourceType, source) => {
+export const addLayer = (sourceType, source) => {
   let catIds = [999]
   if (source.groupid !== undefined) {
     catIds = source.groupid.toString().split(',').map((item) => {
