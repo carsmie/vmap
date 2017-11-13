@@ -20,7 +20,7 @@
     "eslint-plugin-import": "^2.2.0",
     "git": "^0.1.5",
     "node-sass": "^4.5.1",
-    "openlayers": "^3.20.1",
+    "openlayers": "^4.2.0",
     "proj4": "^2.3.17",
     "remote": "^0.2.6",
     "sass-loader": "^4.1.1",
